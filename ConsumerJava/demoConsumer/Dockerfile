@@ -1,16 +1,24 @@
-# Usa una imagen base de OpenJDK (puedes ajustar la versión según tus necesidades)
-FROM openjdk:21-jdk-slim
+# Etapa 1: Compilación con Maven
+FROM maven:3.8.6-openjdk-21-slim AS build
 
-
-# Directorio de trabajo en el contenedor
 WORKDIR /app
 
-# Copia el JAR generado (asegúrate de que el build coloque el JAR en target)
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app.jar
+# Copiamos el archivo pom.xml y el directorio src para aprovechar el cache de Docker
+COPY pom.xml .
+COPY src ./src
 
-# Expone el puerto de la aplicación (configurado en application.properties, ej. 8081 o 8082)
+# Compilamos y empaquetamos la aplicación (se puede omitir tests con -DskipTests)
+RUN mvn clean package -DskipTests
+
+# Etapa 2: Imagen final con OpenJDK
+FROM openjdk:21-jdk-slim
+
+WORKDIR /app
+
+# Copiamos el .jar generado en la etapa de build
+COPY --from=build /app/target/*.jar app.jar
+
+# Exponemos el puerto configurado en la aplicación (ej. 8082)
 EXPOSE 8082
 
-# Comando de inicio de la aplicación
 ENTRYPOINT ["java", "-jar", "app.jar"]
