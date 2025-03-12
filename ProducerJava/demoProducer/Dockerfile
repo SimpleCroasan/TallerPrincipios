@@ -1,24 +1,24 @@
-# Etapa 1: Compilación con Maven
-FROM maven:3.8.6-openjdk-21-slim AS build
+# Etapa 1: Compilación con Maven y OpenJDK 21
+FROM maven:3-eclipse-temurin-21 AS build
 
 WORKDIR /app
 
-# Copiamos el archivo pom.xml y el directorio src para aprovechar el cache de Docker
+# Copia los archivos necesarios para compilar el proyecto
 COPY pom.xml .
 COPY src ./src
 
-# Compilamos y empaquetamos la aplicación (se puede omitir tests con -DskipTests)
+# Compila el proyecto (se pueden omitir tests con -DskipTests)
 RUN mvn clean package -DskipTests
 
-# Etapa 2: Imagen final con OpenJDK
-FROM openjdk:21-jdk-slim
+# Etapa 2: Imagen final con OpenJDK 21
+FROM eclipse-temurin:21-jdk AS runtime
 
 WORKDIR /app
 
-# Copiamos el .jar generado en la etapa de build
+# Copia el .jar generado en la etapa de build
 COPY --from=build /app/target/*.jar app.jar
 
-# Exponemos el puerto configurado en la aplicación (ej. 8082)
+# Expone el puerto configurado en la aplicación
 EXPOSE 8081
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
