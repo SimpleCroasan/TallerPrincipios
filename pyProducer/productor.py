@@ -53,22 +53,9 @@ def enviar_mensaje():
     enviar(mensaje)
     return f"Se envió: {mensaje}"
 
-@app.route('/reconect', methods=['GET'])
-def reconect():
-    global connection
-    global channel
-    try:
-        connection = pika.BlockingConnection(parameters)
-        channel = connection.channel()
-        print("¡Conexión exitosa!")
-        return "¡Conexión exitosa!"
-    except Exception as e:
-        print(f"Error de conexión: {e}")
-        return f"Estado: {e}"
-
 # Iniciar la aplicación
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=FLASK_PORT, debug=True)
+    app.run(host='0.0.0.0', port=FLASK_PORT, debug=True, use_reloader=False)
 
 
 
