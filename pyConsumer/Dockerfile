@@ -9,6 +9,7 @@ COPY . .
 
 # Instalar dependencias
 RUN pip install --no-cache-dir -r requirements.txt
+EXPOSE 5052
 
 # Ejecutar la aplicación
-CMD ["python", "consumer.py"]
+CMD ["python", "-u", "consumer.py"]

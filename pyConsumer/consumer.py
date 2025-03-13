@@ -27,12 +27,16 @@ except Exception as e:
 
 
 mensajesRecibidos = "Recibidos:"
+# Y un lock para sincronizar el acceso a dicha lista
+lock = threading.Lock()
+
 # 3. Definir una función para procesar los mensajes
 def callback(ch, method, properties, body):
-    global mensajesRecibidos
     mensaje = body.decode()
     print(f"[x] Recibido: {mensaje}")
-    mensajesRecibidos = mensajesRecibidos + "<br> - " + mensaje
+    with lock:
+        global mensajesRecibidos
+        mensajesRecibidos = mensajesRecibidos + "<br> - " + mensaje
     # Marcar el mensaje como procesado
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
@@ -57,8 +61,10 @@ app = Flask(__name__)
 # Ruta para obtener mensajes (GET)
 @app.route('/mensaje', methods=['GET'])
 def obtener_mensajes():
-    global mensajesRecibidos
-    return mensajesRecibidos
+    # Se adquiere el lock para leer de forma segura
+    with lock:
+        mensajes_html = mensajesRecibidos
+    return mensajes_html
 
 # 5. Iniciar Flask en un hilo separado
 if __name__ == '__main__':
@@ -67,4 +73,4 @@ if __name__ == '__main__':
     hilo_rabbitmq.start()
 
     # Iniciar Flask en el hilo principal
-    app.run(port=FLASK_PORT, debug=True)
+    app.run(host='0.0.0.0', port=FLASK_PORT, debug=True)

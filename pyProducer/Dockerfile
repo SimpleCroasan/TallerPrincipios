@@ -9,6 +9,7 @@ COPY . .
 
 # Instalar dependencias
 RUN pip install --no-cache-dir -r requirements.txt
+EXPOSE 5051
 
 # Ejecutar la aplicación
 CMD ["python", "productor.py"]

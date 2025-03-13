@@ -68,7 +68,7 @@ def reconect():
 
 # Iniciar la aplicación
 if __name__ == '__main__':
-    app.run(port=FLASK_PORT, debug=True)
+    app.run(host='0.0.0.0', port=FLASK_PORT, debug=True)
 
 
 
