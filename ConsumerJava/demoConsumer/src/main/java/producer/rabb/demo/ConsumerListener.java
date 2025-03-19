@@ -14,10 +14,6 @@ public class ConsumerListener {
     }
 
 
-    @RabbitListener(queues = RabbitConfig.QUEUE_NAME_2)
-    public void receiveMessageJava2(String message) {
-        log.info("Mensaje recibido en ConsumerJava2: " + message);
-    }
 
     @RabbitListener(queues = RabbitConfig.QUEUE_NAME_3)
     public void receiveMessageJava3(String message) {
