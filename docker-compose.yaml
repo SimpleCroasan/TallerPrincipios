@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+
+  javaconsumer:
+    container_name: javacons
+    build:
+      context: ./ConsumerJava/demoConsumer
+      dockerfile: Dockerfile
+    networks:
+      - mired
+    ports:
+      - "8082:8082"
+ 
+
+
+  javaproducer:
+    container_name: javaprod
+    build:
+      context: ./ProducerJava/demoProducer
+      dockerfile: Dockerfile
+    networks:
+      - mired
+    ports:
+      - "8081:8081"
+
+
+  jsconsumer:
+    container_name: jscon
+    build:
+      context: ./ConsumerJs
+      dockerfile: Dockerfile
+    networks:
+      - mired
+    ports:
+      - "8084:8084"
+
+
+  jsproducer:
+    container_name: jsprod
+    build:
+      context: ./ProducerJs
+      dockerfile: Dockerfile
+    networks:
+      - mired
+    ports:
+      - "8083:8083"
+
+
+  pyconsumer:
+    container_name: pycon
+    build:
+      context: ./pyConsumer
+      dockerfile: Dockerfile
+    networks:
+      - mired
+    ports:
+      - "5052:5052"
+    environment:
+      - RABBITMQ_USER=admin
+      - RABBITMQ_PASSWORD=admin
+      - RABBITMQ_QUEUE=fanoutQueue2
+      - RABBITMQ_HOST=rabbitmqt
+
+  # --- Python Producer ---
+  pyproducer:
+    container_name: pypro
+    build:
+      context: ./pyProducer
+      dockerfile: Dockerfile
+    networks:
+      - mired
+    ports:
+      - "5051:5051"
+    environment:
+      - RABBITMQ_USER=admin
+      - RABBITMQ_PASSWORD=admin
+      - RABBITMQ_EXCHANGE=fanoutExchange
+      - RABBITMQ_QUEUE=fanoutQueue
+      - RABBITMQ_HOST=rabbitmqt
+
+networks:
+  mired:
+    external: true
+    # O si no existe la red, puedes usar:
+    # driver: bridge
