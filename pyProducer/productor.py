@@ -26,11 +26,20 @@ try:
 except Exception as e:
     print(f"Error de conexión: {e}")
 
+def conectRabbitMQ():
+    global connection, channel
+    try:
+        connection = pika.BlockingConnection(parameters)
+        channel = connection.channel()
+        print("¡Conexión exitosa!")
+    except Exception as e:
+        print(f"Error de conexión: {e}")
 
 
 # 3. Publicar un mensaje en la cola
 def enviar(mensaje):
     print(f"Publicando: {mensaje}")
+    global channel
     channel.basic_publish(
         exchange=RABBITMQ_EXCHANGE,  # Usar el exchange deseado
         routing_key=RABBITMQ_QUEUE,  # Nombre de la cola
@@ -50,6 +59,7 @@ app = Flask(__name__)
 def enviar_mensaje():
     # Obtener el mensaje
     mensaje = request.args.get('msg', '').strip()
+    conectRabbitMQ()
     enviar(mensaje)
     return f"Se envió: {mensaje}"
 
